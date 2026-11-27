@@ -1,0 +1,8 @@
+# ML-01 notes: starter notebooks
+
+- **Pipeline (`scripts/run_all.py`, client holdout, 2,325 test pages):** hand-rule baseline Precision@50 = 0.240 vs random forest 0.680 (~2.8x). Decision tree 0.54, logistic regression 0.40.
+- **Age vs trend ([notebook 01](../notebooks/01_first_look_and_discovery.ipynb)):** younger pages were down *more* often. 60.9% / 64.0% / 59.5% of pages aged 90–119 / 120–179 / 180–269 days are trending down, against 47.0% (270–364 d) and 42.6% (365+ d); 54.2% overall. The 365+ band also has the most "up" pages (22.6% vs 14.6% overall). This is observational and directional, probably tangled up with client mix and post-launch settling.
+- **Client holdout ([notebook 02](../notebooks/02_your_first_readable_model.ipynb), GroupShuffleSplit by client_id, 25 train / 7 test clients, base rate 0.511):** in-sample, depth-2 tree P@50 0.72 vs hand rule 0.62. On unseen clients: tree 0.60 / 0.60 / 0.64 at depth 2 / 3 / 4 (tie-robust 0.579 / 0.589 / 0.613) vs hand rule 0.44 (tie-robust 0.511 = base rate).
+- **Why the hand rule collapses:** `days_since_last_update >= 180` is almost never true here, so the rule flags only 17 of 30,000 pages (94% of them declining) and 0 of the test clients' pages. Its in-sample P@20 of 0.90 rests on those 17 pages.
+- **Depth 3 vs 4:** depth 4 was ~1–2 pages better out of 50 (noise-level on one split of 7 clients). Depth 3 is still readable: impressions, then content age (~312 d), then ctr / position.
+- **Open questions for my Week-1 research question:** does the age pattern hold *within* each client? Does the tree's edge survive repeated client splits (mean ± spread)? What stale threshold gives the hand rule coverage across all clients?
